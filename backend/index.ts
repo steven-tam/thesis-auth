@@ -1,34 +1,52 @@
-import { Hono } from 'hono'
-import { cors } from 'hono/cors'
-import { Database } from "bun:sqlite"
-import { logger } from 'hono/logger'
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { logger } from "hono/logger";
+import createTable from "./query/createTable";
+import { Database } from "bun:sqlite";
 
 // Initialize Hono
-const app = new Hono()
-app.use(cors())
-app.use(logger())
+const app = new Hono();
+app.use(cors());
+app.use(logger());
 
-// Initialize Database
-const db = new Database("users.sqlite", { // Create sqlite database called "users" if it doesn't already exist
-    create: true, 
-    strict: true,
-})
-db.exec("PRAGMA journal_mode = WAL;"); // Enables WAL mode for better performance
+// Create sqlite database called "auth" if it doesn't already exist
+const db = new Database("auth.sqlite", {
+  create: true,
+  strict: true,
+});
+// Enable WAL mode for better performance
+db.exec("PRAGMA journal_mode = WAL;");
 
-app.get('/', (c) => c.text('Hello Bun!'))
+// Initialize users table
+createTable(db);
 
-app.post('auth/login', async (c) => {
-    return c.text("Login successful")
-})
+app.get("/", (c) => c.text("Hello Bun!"));
 
-app.post('auth/signup', async (c) => {
-    return c.text("Sign up successful")
-})
+    /*  
+        TODO
+        - Check if email is used
+        - Create JWT token 
+        - Locate password from email
+        - Decrypt password
+    */
+app.post("auth/login", async (c) => {
+  const req = await c.req.json();
+  console.log("login request:", req);
+  return c.text("Login successful");
+});
 
-/*
-Default Port: 3000
 
+    /*  
+        TODO
+        - Check if email was used
+        - Encrypt password
+        - Insert email and encrypted password into users
+    */
+app.post("auth/signup", async (c) => {
+  const req = await c.req.json();
+  console.log("sign up request:", req);
 
-*/
+  return c.text("Sign up successful");
+});
 
-export default app
+export default app;

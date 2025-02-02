@@ -30,7 +30,7 @@ export default function LoginForm({
     }));
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
     setLoading(true); // Set loading state
 
@@ -72,7 +72,7 @@ export default function LoginForm({
           <CardDescription>Enter your email below to login to your account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={onSubmit}>
+          <form onSubmit={onLoginSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label"; 
+import { Label } from "@/components/ui/label";
 
 const signUpSchema = z
   .object({
@@ -21,6 +21,7 @@ const signUpSchema = z
 
 export default function SignUpForm() {
   const navigate = useNavigate(); // Initialize useNavigate
+  const [invalid, setInvalid] = useState(false);
   const {
     register,
     handleSubmit,
@@ -33,27 +34,31 @@ export default function SignUpForm() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const onSubmit = async (data: any) => {
-    setLoading(true);
-    await fetch(`${backendUrl}/auth/signup`, 
-        {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            method: "POST",
-            body: JSON.stringify(data) // {email: string, password: string, confirmPassword: string}
-        }
-    )
-    .then(res => console.log(res))
-    .catch(res=> console.log(res))
+    try {
+      setLoading(true);
+      console.log("Sign Up Request:", data);
+      const res = await fetch(`${backendUrl}/auth/signup`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(data), // {email: string, password: string, confirmPassword: string}
+      })
 
-    setTimeout(() => {
-      console.log("Signed Up:", data);
-      setLoading(false);
-      navigate("/"); // Redirect to homepage after signup
-    }, 2000);
+      const result = await res.json()
+      console.log("Signup Response:", result);
+
+      if (res.ok){
+        navigate("/"); // Redirect to homepage after signup
+      } else{
+        console.error("Sign Up failed:", result);
+      }
+    } catch (e) {
+      setInvalid(true);
+    }
+    setLoading(false);
   };
-  
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -63,21 +68,48 @@ export default function SignUpForm() {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <Label>Email</Label>
-            <Input {...register("email")} type="email" placeholder="you@example.com" />
-            {errors.email && <p className="text-red-500 text-sm">{String(errors.email.message)}</p>}
+            <Label className="flex flex-row justify-between">
+              Email
+              {invalid ? <p className="text-red-400">Email already in use</p> : null }
+            </Label>
+            <Input
+              {...register("email")}
+              type="email"
+              placeholder="you@example.com"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">
+                {String(errors.email.message)}
+              </p>
+            )}
           </div>
           <div>
             <Label>Password</Label>
             <div className="relative">
-              <Input {...register("password")} type="password" placeholder="Enter password" />
+              <Input
+                {...register("password")}
+                type="password"
+                placeholder="Enter password"
+              />
             </div>
-            {errors.password && <p className="text-red-500 text-sm">{String(errors.password.message)}</p>}
+            {errors.password && (
+              <p className="text-red-500 text-sm">
+                {String(errors.password.message)}
+              </p>
+            )}
           </div>
           <div>
             <Label>Confirm Password</Label>
-            <Input {...register("confirmPassword")} type="password" placeholder="Confirm password" />
-            {errors.confirmPassword && <p className="text-red-500 text-sm">{String(errors.confirmPassword.message)}</p>}
+            <Input
+              {...register("confirmPassword")}
+              type="password"
+              placeholder="Confirm password"
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm">
+                {String(errors.confirmPassword.message)}
+              </p>
+            )}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Signing up..." : "Sign Up"}

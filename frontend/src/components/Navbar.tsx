@@ -7,7 +7,7 @@ function Navbar() {
       <ul className="flex justify-center flex-col gap-2 ">
         <li>
           <div className="border-2 rounded-md text-center">
-            <a href="/" className="p-4">
+            <a href="/" className="p-10">
               Login
             </a>
           </div>
@@ -15,14 +15,14 @@ function Navbar() {
         </li>
         <li>
           <div className="border-2 rounded-md text-center">
-            <a href="/signup" className="p-4">
+            <a href="/signup" className="p-8">
               Sign Up
             </a>
           </div>
           <img src={arrow} alt="down arrow" />
         </li>
         <li className="border-2 rounded-md text-center">
-          <a href="/treasure" className="p-4">
+          <a href="/treasure" className="p-8">
             Treasure
           </a>
         </li>

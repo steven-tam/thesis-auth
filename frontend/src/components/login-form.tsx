@@ -1,6 +1,12 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
@@ -16,17 +22,18 @@ export default function LoginForm({
   // State to track the form data
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   const [loading, setLoading] = useState(false); // Track loading state
+  const [invalid, setInvalid] = useState(false); // Track loading state
 
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -39,14 +46,15 @@ export default function LoginForm({
     try {
       const res = await fetch(`${backendUrl}/auth/login`, {
         headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
         method: "POST",
-        body: JSON.stringify(formData)
+        credentials: 'include',
+        body: JSON.stringify(formData),
       });
 
-      const result = await res; // Assuming the server sends JSON response
+      const result = await res.json(); // Assuming the server sends JSON response
 
       console.log("Login Response:", result);
 
@@ -55,9 +63,11 @@ export default function LoginForm({
         navigate("/treasure"); // Redirect to treasure page on success
       } else {
         console.error("Login failed:", result);
+        setInvalid(true)
         // Handle login failure (e.g., show error message to the user)
       }
     } catch (error) {
+      setInvalid(true)
       console.error("Error during login:", error);
     } finally {
       setLoading(false); // Reset loading state
@@ -69,7 +79,9 @@ export default function LoginForm({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
+          <CardDescription>
+            Enter your email below to login to your account
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onLoginSubmit}>
@@ -96,14 +108,17 @@ export default function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
+                <div className="flex flex-col items-center h-16">
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  {invalid ? <p className="text-sm text-red-400">Invalid email or password</p> : null }
+                </div>
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Logging in..." : "Login"}

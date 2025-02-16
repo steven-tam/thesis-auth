@@ -29,16 +29,9 @@ createTable(db); // Initialize users table
 
 const JWT_SECRET_SIGNATURE = process.env.JWT_SECRET as string;
 const COOKIE_SECRET_SIGNATURE = process.env.COOKIE_SECRET as string;
+
 // Routes
 app.get("/", (c) => c.text("Hello Bun!"));
-
-/*  
-        TODO
-        - Check if email is used
-        - Create JWT token 
-        - Locate password from email
-        - Decrypt password
-    */
 
 // email: crew@pirateship.com password: 123456
 // Cookies cannot be sent with a POST request

@@ -1,4 +1,4 @@
-
+I built this app to learn about authentication system for writing my thesis. This app uses React, Bun, and Hono.
 Run frontend
 1. Open terminal window
 2. cd thesis-auth
